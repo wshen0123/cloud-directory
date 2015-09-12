@@ -5,33 +5,32 @@ from google.appengine.ext import ndb
 import logging
 
 
-class Server(ndb.Model):
+class Host(ndb.Model):
     ip = ndb.TextProperty()
 
-server_name = "mini"
 class ifconfig(webapp2.RequestHandler):
-    def get(self):
+    def get(self, hostname):
         self.response.headers['Content-Type'] = 'text/plain'
 
-        server = Server.get_by_id(server_name)
-        if server:
-            self.response.write(server.ip)
+        host = Host.get_by_id(hostname)
+        if host:
+            self.response.write(host.ip)
         else:
             self.response.write("")
 
-    def post(self):
+    def post(self, hostname):
         curr_ip = self.request.remote_addr
-        server = Server.get_by_id(server_name)
-        if server:
-            server.ip = curr_ip
-            server.put()
+        host = Host.get_by_id(hostname)
+        if host:
+            host.ip = curr_ip
+            host.put()
         else:
-            server = Server(id="mini", ip=curr_ip)
-            server.put()
+            host = Host(id=hostname, ip=curr_ip)
+            host.put()
         self.response.write(curr_ip)
 
 logging.getLogger().setLevel(logging.DEBUG)
 
 application = webapp2.WSGIApplication([
-    ('/mini/ifconfig', ifconfig),
+    webapp2.Route(r'/<hostname>/ip', handler=ifconfig, name='ifconfig')
 ], debug=True)

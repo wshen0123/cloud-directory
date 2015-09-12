@@ -3,4 +3,4 @@
   exit 1;
 
 reset
-$GOOG_SDK/dev_appserver.py --clear_datastore true .
+$GOOG_SDK/dev_appserver.py --host 0.0.0.0 --clear_datastore true .
